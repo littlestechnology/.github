@@ -6,7 +6,16 @@ labels: screen
 assignees: ''
 
 ---
+## Acceptance Criteria
+<!-- A clear understanding of what the screen is supposed to do. -->
 
+## Design
+<!-- Include any design documents that show the desired screen. -->
+
+## States
+<!-- Enumerate the number of states for the screen and the differences between them. -->
+
+## Tasks
 - [ ] Setup Navigation
 - [ ] Create View Model
 - [ ] Setup Mock Data
