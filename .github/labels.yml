@@ -4,6 +4,9 @@
 - name: ":blue_book: documentation"
   color: 0075ca
   description: "Improvements or additions to documentation"
+- name: ":iphone: screen"
+  color: 34b599
+  description: "Adds a new screen to the application"
 - name: ":family: duplicate"
   color: "cfd3d7"
   description: "This issue or pull request already exists"
