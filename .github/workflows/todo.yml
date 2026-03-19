@@ -1,0 +1,36 @@
+name: TODO
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '0 0 * * 4'
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+        type: choice
+        options:
+          - info
+          - warning
+          - debug
+          
+permissions:
+  issues: write
+  repository-projects: read
+  contents: read
+
+jobs:
+  todo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.3.4
+      - name: TODO ISSUES
+        uses: Juulsn/todo-issue@v1.1.4
+        with:
+          keywords: TODO, QUESTION, HACK
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

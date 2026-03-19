@@ -1,0 +1,68 @@
+name: Integration
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+    branches:
+      - 'main'
+    paths-ignore:
+      - '**.md'
+      - 'doc/**'
+      - '.git/'
+      - '.vscode/'
+
+jobs:
+  build:
+    name: 🏗️ Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📸 Clone
+        uses: actions/checkout@v4
+      - name: 🗂️ Submodules
+        uses: actions/checkout@v4
+        with:
+          repository: 'littlestechnology/cqrsz'
+          path: cqrsz
+          ssh-key: '${{ secrets.CQRSZ_SSH }}'
+          submodules: 'true'
+      - name: 🗄️ Cache
+        uses: actions/cache@v4
+        with:
+          path: /opt/hostedtoolcache/flutter
+          key: ${{ runner.os }}-flutter
+      - name: 💾 Install
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.22.3
+      - name: 📢 Version
+        run: flutter --version
+      - name: 🌊 Restore
+        run: flutter pub get
+      - name: 🫙 Container
+        continue-on-error: true
+        run: dart run build_runner build --delete-conflicting-outputs
+      - name: 🔎 Analyze
+        run: flutter analyze --no-fatal-infos
+        continue-on-error: true
+      - name: 🚥 Cover
+        run: flutter test test --coverage
+#      - name: 📊 Coverage Report
+#        uses: zgosalvez/github-actions-report-lcov@v4.1.23
+#        with:
+#          coverage-files: coverage/lcov.info
+#          minimum-coverage: 90
+#          artifact-name: code-coverage-report
+#          github-token: ${{ secrets.GITHUB_TOKEN }}
+#          update-comment: true

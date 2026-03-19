@@ -1,0 +1,49 @@
+name: publish
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+    branches:
+      - 'main'
+    paths-ignore:
+      - '**.md'
+      - 'doc/**'
+      - '.git/'
+      - '.vscode/'
+
+jobs:
+  publish:
+    name: 🏗️ Publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📸 Clone
+        uses: actions/checkout@v4
+      - name: 🎯 Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: 3.4.4
+      - name: 📢 Version
+        run: dart --version
+      - name: 🌊 Restore
+        run: dart pub get
+      - name: 🫙 Container
+        run: dart run build_runner build --delete-conflicting-outputs
+      - name: ⚡ Activate
+        run: dart pub global activate coverage
+      - name: 📊 Cover
+        run: dart pub global run coverage:test_with_coverage
+      - name: Report
+        uses: codecov/codecov-action@v4.0.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/lcov.info
